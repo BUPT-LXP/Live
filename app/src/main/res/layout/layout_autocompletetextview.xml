@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <AutoCompleteTextView
+        android:id="@+id/autocompltetextview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/imageview"
+        android:layout_centerVertical="true"
+        android:hint="请输入直播地址"
+        android:singleLine="true"
+        android:paddingLeft="0dp"
+        android:paddingTop="10dp"
+        android:paddingRight="0dp"
+        android:paddingBottom="10dp"
+        android:layout_marginRight="10dp"
+        style="@style/MyAutoCompleteTextView"/>
+
+    <ImageView
+        android:id="@+id/imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@mipmap/delete"
+        android:scaleType="fitCenter"/>
+
+</RelativeLayout>

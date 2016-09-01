@@ -1,0 +1,74 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!--colorPrimaryDark对应状态栏的颜色-->
+        <item name="colorPrimaryDark">@color/colorSelected</item>
+        <!--colorPrimary对应ActionBar的颜色-->
+        <item name="colorPrimary">@color/colorSelected</item>
+        <!--colorAccent 对应EditText编辑时、RadioButton选中、CheckBox等选中时的颜色-->
+        <item name="colorAccent">@color/colorPrimary</item>
+
+        <!-- 为了让标题栏与下面的layout之间没有黑线 -->
+        <item name="android:windowContentOverlay">@android:color/transparent</item>
+
+        <!--AutoCompleteTextView的下划线颜色-->
+        <item name="android:dropDownListViewStyle">@style/mySpinnerStyle</item>
+    </style>
+
+    <style name="AppTheme.NoTitleBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.NoTitleBar.Fullscreen">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!--适用于欢迎界面避免第一次进来白屏或黑屏，或开启滑动返回功能的Activity的主题-->
+    <style name="AppTheme.Transparent">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="AppTheme.Transparent.Fullscreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+
+    <style name="mySpinnerStyle" parent="android:style/Widget.ListView.DropDown">
+        <item name="android:divider">@color/colorPrimary</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+    <style name="MyAutoCompleteTextView" parent="android:Widget.Holo.Light.AutoCompleteTextView">
+        <item name="android:background">@drawable/apptheme_edit_text_holo_light</item>
+    </style>
+
+
+    <style name="ActionBar.Style.WindowTitle">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ActionBar.Style">
+        <item name="android:singleLine">true</item>
+        <item name="android:textAppearance">@style/ActionBar.Style.WindowTitle</item>
+        <item name="android:shadowColor">#BB000000</item>
+        <item name="android:shadowRadius">2.75</item>
+    </style>
+
+    <style name="ActionBar.Background">
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="ActionBar" parent="android:Theme">
+        <item name="android:windowTitleStyle">@style/ActionBar.Style</item>
+        <item name="android:windowTitleSize">56dp</item>
+        <item name="android:windowTitleBackgroundStyle">@style/ActionBar.Background</item>
+    </style>
+
+</resources>

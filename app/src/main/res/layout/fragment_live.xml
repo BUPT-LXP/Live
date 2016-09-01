@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorBackground"
+        android:orientation="horizontal" >
+
+
+        <com.lue.live.model.AdvancedAutoCompleteTextView
+            android:id="@+id/autocompltetextview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toStartOf="@+id/button_play"
+            android:layout_marginStart="10dp">
+
+        </com.lue.live.model.AdvancedAutoCompleteTextView>
+
+
+        <Button
+            android:id="@+id/button_play"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:text="播放"
+            android:textSize="20sp"
+            android:background="@drawable/shape_textbutton"
+            android:textColor="@android:color/white"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+    </RelativeLayout>
+
+</LinearLayout>
