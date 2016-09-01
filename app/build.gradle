@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:23.2.1'
     compile files('libs/panframe-1.9.jar')
     compile 'com.melnykov:floatingactionbutton:1.3.0'
+    compile files('libs/libammsdk.jar')
 }

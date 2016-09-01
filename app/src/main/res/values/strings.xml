@@ -4,4 +4,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="view_file_activity">文件浏览</string>
+
+    <string name="wechat_friends">微信好友</string>
+    <string name="wechat_moments">朋友圈</string>
 </resources>

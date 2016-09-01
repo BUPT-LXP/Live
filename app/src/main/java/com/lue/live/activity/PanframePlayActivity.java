@@ -4,6 +4,8 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -32,12 +34,19 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.lue.live.R;
+import com.lue.live.model.WeChatModel;
+import com.lue.live.model.WeChatUtil;
 import com.panframe.android.lib.PFAsset;
 import com.panframe.android.lib.PFAssetObserver;
 import com.panframe.android.lib.PFAssetStatus;
 import com.panframe.android.lib.PFNavigationMode;
 import com.panframe.android.lib.PFObjectFactory;
 import com.panframe.android.lib.PFView;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,6 +76,7 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
     private SeekBar seekBar_video;
     private RelativeLayout rl_top;
     private TextView tv_title;
+    private ImageButton shareButton;
     private ImageButton settingsButton;
     private View videoView1 = null;
     private GestureDetectorCompat mDetector;
@@ -89,10 +99,9 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
 
     //设置菜单相关
     private PopupWindow popupWindow_setting;
-    private SeekBar seekBar_lighting;
-    private SeekBar seekBar_voice;
-    private RadioGroup radioGroup_videosize;
-    private RadioGroup radioGroup_playingmode;
+
+    //分享相关
+    private PopupWindow popupWindow_share;
 
 
     //当前屏幕亮度的模式
@@ -103,6 +112,10 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
     private int curVolume; // 当前音量值
     private AudioManager audioMgr = null; // Audio管理器，用了控制音量
     private float aspect_ratio;
+
+
+    // IWXAPI 是第三方app和微信通信的openapi接口
+    private IWXAPI api;
 
 
     //处理动画的handler
@@ -117,7 +130,10 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
             }
             else
             {
-                popupWindow_setting.dismiss();
+                if(popupWindow_setting != null)
+                    popupWindow_setting.dismiss();
+                if(popupWindow_share != null)
+                    popupWindow_share.dismiss();
                 Show_Anim();
             }
         }
@@ -135,6 +151,14 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
         aspect_ratio = (float)intent.getDoubleExtra("ratio", 1);
         aspect_ratio = 1/aspect_ratio;
         playing_mode = intent.getIntExtra("playing_mode", 0);
+
+
+        //要使你的程序启动后微信终端能响应你的程序，必须在代码中向微信终端注册你的id
+        // 通过WXAPIFactory工厂，获取IWXAPI的实例
+        api = WXAPIFactory.createWXAPI(this, WeChatModel.APP_ID, false);
+        // 将该app注册到微信
+        api.registerApp(WeChatModel.APP_ID);
+
 
         InitView();
 
@@ -156,7 +180,6 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
     public void InitView()
     {
         frameContainer = (ViewGroup) findViewById(R.id.framecontainer);
-        frameContainer.setBackgroundColor(0xFF000000);
         frameContainer.setOnClickListener(this);
         frameContainer.setBackgroundColor(0xFF000000);
 
@@ -171,6 +194,7 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
         backButton = (ImageButton) findViewById(R.id.play_back);
         tv_title = (TextView) findViewById(R.id.text_title);
         tv_title.setText(title);
+        shareButton = (ImageButton) findViewById(R.id.button_share);
         settingsButton = (ImageButton) findViewById(R.id.button_settings);
 
         playButton.setOnClickListener(this);
@@ -178,6 +202,7 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
         vrButton.setOnClickListener(this);
         touchButton.setOnClickListener(this);
         backButton.setOnClickListener(this);
+        shareButton.setOnClickListener(this);
         settingsButton.setOnClickListener(this);
         seekBar_video.setOnSeekBarChangeListener(this);
         seekBar_video.setEnabled(false);
@@ -610,93 +635,18 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
                 Show_Anim();
                 break;
             case R.id.button_settings:
-                if (popupWindow_setting == null)
-                {
-                    LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                    View popupview = layoutInflater.inflate(R.layout.layout_setting_popupwindow, null);
-
-                    seekBar_lighting = (SeekBar) popupview.findViewById(R.id.seekbar_light);
-                    seekBar_voice = (SeekBar) popupview.findViewById(R.id.seekbar_voice);
-                    radioGroup_videosize = (RadioGroup)popupview.findViewById(R.id.radio_video_size);
-                    radioGroup_playingmode = (RadioGroup)popupview.findViewById(R.id.radio_playing_mode);
-
-                    seekBar_lighting.setProgress(screenBrightness);
-                    seekBar_lighting.setOnSeekBarChangeListener(this);
-                    seekBar_voice.setOnSeekBarChangeListener(this);
-                    seekBar_voice.setMax(maxVolume);
-                    seekBar_voice.setProgress(curVolume);
-
-                    radioGroup_videosize.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-                    {
-                        @Override
-                        public void onCheckedChanged(RadioGroup group, int checkedId)
-                        {
-                            switch (checkedId)
-                            {
-                                case R.id.sixteen_nine:
-                                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.MATCH_PARENT);
-                                    frameContainer.setLayoutParams(lp);
-                                    break;
-                                case R.id.four_three:
-                                    FrameLayout.LayoutParams lp1 = new FrameLayout.LayoutParams((int)(screen_height*4)/3, (int)screen_height);
-                                    lp1.gravity = Gravity.CENTER;
-                                    frameContainer.setLayoutParams(lp1);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            StartTimerTask(2);
-                        }
-                    });
-
-                    radioGroup_playingmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-                    {
-                        @Override
-                        public void onCheckedChanged(RadioGroup group, int checkedId)
-                        {
-                            switch (checkedId)
-                            {
-                                case R.id.mode_0:
-                                    pfView.setMode(0, aspect_ratio);
-                                    break;
-                                case R.id.mode_1:
-                                    pfView.setMode(1, aspect_ratio);
-                                    break;
-                                case R.id.mode_2:
-                                    pfView.setMode(2, aspect_ratio);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            StartTimerTask(2);
-                        }
-                    });
-
-                    popupWindow_setting = new PopupWindow(popupview, LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT);
-                    popupWindow_setting.setFocusable(true);
-                    popupWindow_setting.setOutsideTouchable(true);
-                    popupWindow_setting.setBackgroundDrawable(new BitmapDrawable());
-                }
-
-                if (!popupWindow_setting.isShowing())
-                {
-                    popupWindow_setting.showAsDropDown(settingsButton,0,
-                            (int)getResources().getDimension(R.dimen.playactivity_menu_demen));
-                    StartTimerTask(2);
-                }
-                else
-                    popupWindow_setting.dismiss();
-
+                setting_Button_Pressed();
                 break;
-
+            case R.id.button_share:
+                share_Button_Pressed();
+                break;
             default:
                 break;
         }
     }
 
 
+    //为了捕捉到屏幕的触摸事件
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener
     {
         @Override
@@ -719,5 +669,166 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
     public void onBackPressed()
     {
         finish();
+    }
+
+
+    private void setting_Button_Pressed()
+    {
+        if (popupWindow_setting == null)
+        {
+            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            View popupview = layoutInflater.inflate(R.layout.layout_setting_popupwindow, null);
+
+            SeekBar seekBar_lighting = (SeekBar) popupview.findViewById(R.id.seekbar_light);
+            SeekBar seekBar_voice = (SeekBar) popupview.findViewById(R.id.seekbar_voice);
+            RadioGroup radioGroup_videosize = (RadioGroup) popupview.findViewById(R.id.radio_video_size);
+            RadioGroup radioGroup_playingmode = (RadioGroup) popupview.findViewById(R.id.radio_playing_mode);
+
+            seekBar_lighting.setProgress(screenBrightness);
+            seekBar_lighting.setOnSeekBarChangeListener(this);
+            seekBar_voice.setOnSeekBarChangeListener(this);
+            seekBar_voice.setMax(maxVolume);
+            seekBar_voice.setProgress(curVolume);
+
+            radioGroup_videosize.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+            {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId)
+                {
+                    switch (checkedId)
+                    {
+                        case R.id.sixteen_nine:
+                            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT);
+                            frameContainer.setLayoutParams(lp);
+                            break;
+                        case R.id.four_three:
+                            FrameLayout.LayoutParams lp1 = new FrameLayout.LayoutParams((int)(screen_height*4)/3, (int)screen_height);
+                            lp1.gravity = Gravity.CENTER;
+                            frameContainer.setLayoutParams(lp1);
+                            break;
+                        default:
+                            break;
+                    }
+                    StartTimerTask(2);
+                }
+            });
+
+            radioGroup_playingmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+            {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId)
+                {
+                    switch (checkedId)
+                    {
+                        case R.id.mode_0:
+                            pfView.setMode(0, aspect_ratio);
+                            break;
+                        case R.id.mode_1:
+                            pfView.setMode(1, aspect_ratio);
+                            break;
+                        case R.id.mode_2:
+                            pfView.setMode(2, aspect_ratio);
+                            break;
+                        default:
+                            break;
+                    }
+                    StartTimerTask(2);
+                }
+            });
+
+            popupWindow_setting = new PopupWindow(popupview, LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            popupWindow_setting.setFocusable(true);
+            popupWindow_setting.setOutsideTouchable(true);
+            popupWindow_setting.setBackgroundDrawable(new BitmapDrawable());
+        }
+
+        if (!popupWindow_setting.isShowing())
+        {
+            popupWindow_setting.showAsDropDown(settingsButton,0,
+                    (int)getResources().getDimension(R.dimen.playactivity_menu_demen));
+            StartTimerTask(2);
+        }
+        else
+            popupWindow_setting.dismiss();
+    }
+
+
+    private void share_Button_Pressed()
+    {
+        if(popupWindow_share == null)
+        {
+            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            View popupview = layoutInflater.inflate(R.layout.layout_share_popupwindow, null);
+
+            TextView friends = (TextView)popupview.findViewById(R.id.text_wechat_friends);
+            TextView moments = (TextView)popupview.findViewById(R.id.text_wechat_moments);
+
+            popupWindow_share = new PopupWindow(popupview, LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            popupWindow_share.setFocusable(true);
+            popupWindow_share.setOutsideTouchable(true);
+            popupWindow_share.setBackgroundDrawable(new BitmapDrawable());
+
+            friends.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    Share_to_Wechat(true);
+                }
+            });
+
+            moments.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    Share_to_Wechat(false);
+                }
+            });
+        }
+
+        if(!popupWindow_share.isShowing())
+        {
+            popupWindow_share.showAsDropDown(shareButton,0,
+                    (int)getResources().getDimension(R.dimen.playactivity_menu_demen));
+            StartTimerTask(2);
+        }
+        else
+            popupWindow_share.dismiss();
+    }
+
+
+    /**
+     * 分享到微信
+     * @param flag true 代表分享到好友，false代表分享到朋友圈
+     */
+    private void Share_to_Wechat(boolean flag)
+    {
+
+        //初始化一个 WXWebpageObject 对象，填写url
+        WXWebpageObject webpage = new WXWebpageObject();
+        webpage.webpageUrl = "www.baidu.com";
+
+        //用 WXWebpageObject 对象初始化一个
+        WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title = title;
+        msg.description = title + "描述";
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.icon);
+        msg.thumbData = WeChatUtil.bmpToByteArray(bitmap, true);
+
+        //构造一个Req
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = WeChatUtil.buildTransaction("webpage");
+        req.message = msg;
+
+        if(flag)
+            req.scene = SendMessageToWX.Req.WXSceneSession;
+        else
+            req.scene = SendMessageToWX.Req.WXSceneTimeline;
+
+        api.sendReq(req);
     }
 }
