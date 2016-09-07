@@ -5,6 +5,8 @@
 
     <corners  android:radius="10dp"/>
 
+    <solid android:color="@android:color/white"/>
+
     <padding
         android:bottom="6dp"
         android:left="6dp"

@@ -98,7 +98,7 @@ public class ViewFileActivity extends AppCompatActivity
 
                             for (File file : child_files)
                             {
-                                if (file.getName().endsWith(".mp4"))
+                                if (file.getName().endsWith(".mp4") || file.getName().endsWith(".avi"))
                                 {
                                     movie_paths.add(file.toString());
                                 }
@@ -106,7 +106,7 @@ public class ViewFileActivity extends AppCompatActivity
                         }
                         else
                         {
-                            if(scanFile.getFileName().endsWith(".mp4"))
+                            if(scanFile.getFileName().endsWith(".mp4") || scanFile.getFileName().endsWith(".avi"))
                                 movie_paths.add(scanFile.getFilePath());
                         }
                     }

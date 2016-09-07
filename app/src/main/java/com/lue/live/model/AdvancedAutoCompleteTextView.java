@@ -42,7 +42,7 @@ public class AdvancedAutoCompleteTextView extends RelativeLayout{
         tv=new AutoCompleteTextView(context);
         tv.setLayoutParams(params);
         tv.setSingleLine(true);
-        tv.setHint("请输入直播地址");
+        tv.setHint("http://liveyun.ctbri.com.cn/live1/F99E67BFF68E23414AE0226145BEF817/playlist.m3u8");
         tv.setBackground(context.getResources().getDrawable(R.drawable.shape_autocompletetextview));
 
 

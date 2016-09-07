@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
@@ -187,6 +188,8 @@ public class LocalFragment extends Fragment implements AdapterView.OnItemClickLi
                     {
                         media.setDataSource(filepath);
                         Bitmap bitmap = media.getFrameAtTime();
+                        if(bitmap == null)
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.movie);
                         int height = bitmap.getHeight();
                         int width = bitmap.getWidth();
                         double ratio = (double)height/(double)width;
@@ -321,7 +324,11 @@ public class LocalFragment extends Fragment implements AdapterView.OnItemClickLi
     private static String getMovieTitle(String str)
     {
         int index1 = str.lastIndexOf("/");
-        int index2 = str.indexOf(".mp4");
+        int index2 = 0;
+        if(str.endsWith(".mp4"))
+            index2 = str.indexOf(".mp4");
+        else if(str.endsWith(".avi"))
+            index2 = str.indexOf(".avi");
         return str.substring(index1+1, index2);
     }
 

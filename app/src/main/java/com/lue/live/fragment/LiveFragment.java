@@ -31,6 +31,9 @@ public class LiveFragment extends Fragment
     private ArrayList<String> mOriginalValues=new ArrayList<String>();
     private Button button_play;
 
+    //测试时使用的默认地址
+    private String string_test = "http://liveyun.ctbri.com.cn/live1/F99E67BFF68E23414AE0226145BEF817/playlist.m3u8";
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -61,7 +64,10 @@ public class LiveFragment extends Fragment
 
 
                 Intent intent = new Intent(mActivity, PanframePlayActivity.class);
-                intent.putExtra("path", "http://180.153.55.2:80/TESTING/20160824/11/01/m3u8/ctc_1-7418de6897.m3u8");
+                if(autoCompleteTextView.getInput().isEmpty())
+                    intent.putExtra("path", string_test);
+                else
+                    intent.putExtra("path", autoCompleteTextView.getInput());
                 //注意titles比path多一个
                 intent.putExtra("title", "测试直播流");
                 intent.putExtra("ratio", 0.5625);

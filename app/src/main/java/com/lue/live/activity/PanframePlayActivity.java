@@ -484,14 +484,16 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
                 break;
             case COMPLETE:
                 Log.d("LiveDemo", "Complete");
-                playButton.setBackgroundResource(R.mipmap.play);
-                if (seekbarTimer != null)
-                {
-                    seekbarTimer.cancel();
-                    seekbarTimer.purge();
-                    seekbarTimer = null;
-                }
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                playButton.setBackgroundResource(R.mipmap.play);
+//                if (seekbarTimer != null)
+//                {
+//                    seekbarTimer.cancel();
+//                    seekbarTimer.purge();
+//                    seekbarTimer = null;
+//                }
+//                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                seekBar_video.setProgress(0);
+                pfAsset.play();
                 break;
             case ERROR:
                 Log.d("LiveDemo", "Error");
@@ -561,6 +563,17 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
         switch (id)
         {
             case R.id.play_back:
+                pfAsset.stop();
+
+                // cleanup
+                pfView.release();
+                pfAsset.release();
+
+                pfAsset = null;
+
+                frameContainer.removeView(videoView1);
+                pfView = null;
+                System.gc();
                 finish();
                 break;
             case R.id.stopbutton:
@@ -668,6 +681,17 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
     @Override
     public void onBackPressed()
     {
+        pfAsset.stop();
+
+        // cleanup
+        pfView.release();
+        pfAsset.release();
+
+        pfAsset = null;
+
+        frameContainer.removeView(videoView1);
+        pfView = null;
+        System.gc();
         finish();
     }
 

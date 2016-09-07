@@ -17,7 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toStartOf="@+id/button_play"
-            android:layout_marginStart="10dp">
+            android:layout_marginStart="10dp"
+            android:layout_toLeftOf="@+id/button_play"
+            android:layout_marginLeft="10dp">
 
         </com.lue.live.model.AdvancedAutoCompleteTextView>
 
@@ -36,7 +38,8 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
 </LinearLayout>
