@@ -187,9 +187,17 @@ public class LocalFragment extends Fragment implements AdapterView.OnItemClickLi
                     try
                     {
                         media.setDataSource(filepath);
-                        Bitmap bitmap = media.getFrameAtTime();
-                        if(bitmap == null)
+                        Bitmap bitmap1 = media.getFrameAtTime();
+                        Bitmap bitmap;
+                        if(bitmap1 == null)
                             bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.movie);
+                        else
+                        {
+                            bitmap = Bitmap.createBitmap(bitmap1, 0, 0,
+                                    (int)getResources().getDimension(R.dimen.thumbnail_width),(int)getResources().getDimension(R.dimen.thumbnail_height));
+                            bitmap1.recycle();
+                            bitmap1 = null;
+                        }
                         int height = bitmap.getHeight();
                         int width = bitmap.getWidth();
                         double ratio = (double)height/(double)width;
