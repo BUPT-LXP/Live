@@ -39,7 +39,8 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:textSize="20dp"
-            android:layout_toEndOf="@+id/play_back"/>
+            android:layout_toEndOf="@+id/play_back"
+            android:layout_toRightOf="@+id/play_back"/>
 
         <ImageButton
             android:id="@+id/button_share"
@@ -90,7 +91,8 @@
             android:layout_toRightOf="@+id/stopbutton"
             android:layout_alignParentEnd="false"
             android:layout_marginRight="16dp"
-            android:background="@mipmap/play"/>
+            android:background="@mipmap/play"
+            android:layout_alignParentRight="false"/>
 
 
         <SeekBar

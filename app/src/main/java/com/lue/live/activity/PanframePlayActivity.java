@@ -706,7 +706,7 @@ public class PanframePlayActivity extends AppCompatActivity implements PFAssetOb
             SeekBar seekBar_lighting = (SeekBar) popupview.findViewById(R.id.seekbar_light);
             SeekBar seekBar_voice = (SeekBar) popupview.findViewById(R.id.seekbar_voice);
             RadioGroup radioGroup_videosize = (RadioGroup) popupview.findViewById(R.id.radio_video_size);
-            RadioGroup radioGroup_playingmode = (RadioGroup) popupview.findViewById(R.id.radio_playing_mode);
+            final RadioGroup radioGroup_playingmode = (RadioGroup) popupview.findViewById(R.id.radio_playing_mode);
 
             seekBar_lighting.setProgress(screenBrightness);
             seekBar_lighting.setOnSeekBarChangeListener(this);

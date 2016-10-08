@@ -35,6 +35,7 @@ public class LiveFragment extends Fragment
     private String string_test = "http://liveyun.ctbri.com.cn/live1/F99E67BFF68E23414AE0226145BEF817/playlist.m3u8";
 
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {

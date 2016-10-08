@@ -27,6 +27,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@mipmap/delete"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
